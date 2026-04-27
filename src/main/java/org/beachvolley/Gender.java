@@ -1,3 +1,3 @@
-package org.example;
+package org.beachvolley;
 
 public enum Gender { MALE, FEMALE }
