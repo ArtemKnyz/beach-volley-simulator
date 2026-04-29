@@ -5,7 +5,7 @@ import java.util.List;
 public record Team(Player man, Player woman) {
 
     public double strength() {
-        return (man.getSkill() + woman.getSkill()) / 2;  // skill() → getSkill()
+        return (man.getSkill() + woman.getSkill()) / 2;
     }
 
     public List<Player> players() {
