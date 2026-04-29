@@ -2,6 +2,7 @@ package org.beachvolley;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.Random;
 
 public class Match {
@@ -19,14 +20,27 @@ public class Match {
         this.gameMode = gameMode;
         this.team1 = team1;
         this.team2 = team2;
-        log.debug("Создан матч: {} vs {} [{}]", team1, team2, gameMode.getDescription());
     }
 
-    public Team getTeam1()    { return team1; }
-    public Team getTeam2()    { return team2; }
-    public int getScore1()    { return score1; }
-    public int getScore2()    { return score2; }
-    public boolean isPlayed() { return played; }
+    public Team getTeam1() {
+        return team1;
+    }
+
+    public Team getTeam2() {
+        return team2;
+    }
+
+    public int getScore1() {
+        return score1;
+    }
+
+    public int getScore2() {
+        return score2;
+    }
+
+    public boolean isPlayed() {
+        return played;
+    }
 
     public void play(Random random) {
         log.debug("Авто-симуляция: {} vs {}", team1, team2);
@@ -46,15 +60,35 @@ public class Match {
     }
 
     public void setScore(int s1, int s2) {
-        log.debug("Ручной ввод счёта: {}:{} для {} vs {}", s1, s2, team1, team2);
-
         int target = gameMode.getTargetScore();
+
+        if (s1 < 0 || s2 < 0)
+            throw new IllegalArgumentException(
+                    "Счёт не может быть отрицательным.");
+
         if (s1 == s2)
-            throw new IllegalArgumentException("Ничья недопустима.");
-        if (Math.max(s1, s2) < target)
+            throw new IllegalArgumentException(
+                    "Ничья недопустима.");
+
+        int winner = Math.max(s1, s2);
+        int loser  = Math.min(s1, s2);
+
+        if (winner < target)
             throw new IllegalArgumentException(
                     "Победитель должен набрать минимум " + target + " очков.");
 
+        if (winner > target) {
+            if (loser != target - 1)
+                throw new IllegalArgumentException(
+                        "При счёте выше " + target +
+                                " возможен только дьюс. Например " +
+                                (target + 1) + ":" + (target - 1));
+            if (winner - loser != 2)
+                throw new IllegalArgumentException(
+                        "При дьюсе победитель должен вести ровно на 2 очка.");
+        }
+
+        log.debug("Ручной ввод счёта: {}:{} для {} vs {}", s1, s2, team1, team2);
         this.score1 = s1;
         this.score2 = s2;
         played = true;
@@ -71,25 +105,26 @@ public class Match {
             p.addPointsScored(score2);
             p.addPointsConceded(score1);
         }
-        if (score1 > score2) {
-            team1.players().forEach(Player::addWin);
-            team2.players().forEach(Player::addLoss);
-            log.debug("Победитель: {}", team1);
-        } else {
-            team2.players().forEach(Player::addWin);
-            team1.players().forEach(Player::addLoss);
-            log.debug("Победитель: {}", team2);
-        }
-    }
+        Team winner = score1 > score2 ? team1 : team2;
+        Team loser = score1 > score2 ? team2 : team1;
 
-    public String getTeamsString() {
-        return String.format("%s  vs  %s  [до %d]", team1, team2, gameMode.getTargetScore());
+        winner.players().forEach(Player::addWin);
+        loser.players().forEach(Player::addLoss);
+
+        log.debug("Победитель {}", winner);
     }
 
     @Override
     public String toString() {
-        String status = played ? String.format("%d:%d", score1, score2) : "не сыгран";
+        String score = played ? String.format("%d:%d", score1, score2) : "не сыгран";
         return String.format("%-18s vs %-18s  %s  [%s]",
-                team1, team2, status, gameMode.getDescription());
+                team1, team2, score, gameMode.getDescription());
     }
+
+    public String getTeamsString() {
+        return String.format("%-18s vs  %-18s [до %d]",
+                team1, team2, gameMode.getTargetScore());
+    }
+
+
 }

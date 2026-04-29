@@ -1,17 +1,15 @@
 <configuration>
 
-    <!-- Паттерн времени и уровня -->
     <property name="LOG_PATTERN"
               value="%d{yyyy-MM-dd HH:mm:ss} [%-5level] %logger{36} — %msg%n"/>
 
-    <!-- ── Консоль ── -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
+            <charset>UTF-8</charset>  <!-- ← добавить -->
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
-    <!-- ── Файл с ротацией (новый файл каждый день, хранить 30 дней) ── -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/volleyball.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -19,11 +17,11 @@
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
+            <charset>UTF-8</charset>  <!-- ← добавить -->
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
-    <!-- Уровень INFO для нашего пакета, DEBUG для отладки -->
     <logger name="org.beachvolley" level="DEBUG"/>
 
     <root level="INFO">

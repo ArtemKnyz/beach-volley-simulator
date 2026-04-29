@@ -38,14 +38,14 @@ class PlayerTest {
     @DisplayName("Рейтинг учитывает мячи: +1 за каждые 10 забитых")
     void pointsScoredAffectRating() {
         player.addPointsScored(30);
-        Assertions.assertEquals(103, player.rating()); // 100 + 30/10
+        Assertions.assertEquals(103, player.rating());
     }
 
     @Test
     @DisplayName("Рейтинг учитывает мячи: -1 за каждые 10 пропущенных")
     void pointsConcededAffectRating() {
         player.addPointsConceded(20);
-        Assertions.assertEquals(98, player.rating()); // 100 - 20/10
+        Assertions.assertEquals(98, player.rating());
     }
 
     @Test
@@ -70,7 +70,6 @@ class PlayerTest {
         for (int i = 0; i < 2; i++) player.addLoss();
         player.addPointsScored(80);
         player.addPointsConceded(40);
-        // 100 + 5*5 - 2*2 + 80/10 - 40/10 = 100 + 25 - 4 + 8 - 4 = 125
         Assertions.assertEquals(125, player.rating());
     }
 }

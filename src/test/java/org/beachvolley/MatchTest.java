@@ -67,7 +67,6 @@ class MatchTest {
     void winsAndLossesApplied() {
         Match match = new Match(GameMode.POINTS_11, team1, team2);
         match.setScore(11, 5);
-        // team1 победила
         assertEquals(1, team1.man().getWins());
         assertEquals(1, team1.woman().getWins());
         assertEquals(1, team2.man().getLosses());

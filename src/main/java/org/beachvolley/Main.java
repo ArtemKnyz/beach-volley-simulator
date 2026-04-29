@@ -1,33 +1,48 @@
 package org.beachvolley;
 
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Main {
 
-    private static final Scanner sc = new Scanner(System.in);
+    private static Scanner sc;
 
     public static void main(String[] args) {
 
-        System.out.println("╔══════════════════════════════════════╗");
-        System.out.println("║   Пляжный волейбол — Микст 2×2       ║");
-        System.out.println("╚══════════════════════════════════════╝\n");
+        System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
+        sc = new Scanner(System.in, StandardCharsets.UTF_8);
 
-        // ── 1. Ввод игроков ──────────────────────────────────────────
+        int width = 44;
+        String title = "ПЛЯЖНЫЙ ВОЛЕЙБОЛ - МИКСТ 2x2";
+        String subtitle = "Турнир смешанных пар";
+
+        String topBot = "+" + "=".repeat(width) + "+";
+        String empty = "|" + " ".repeat(width) + "|";
+
+        System.out.println(topBot);
+        System.out.println(empty);
+        System.out.println("|" + center(title, width) + "|");
+        System.out.println("|" + center(subtitle, width) + "|");
+        System.out.println(empty);
+        System.out.println(topBot);
+        System.out.println();
+
+
         List<Player> players = inputPlayers();
 
-        // ── 2. Выбор режима игры ─────────────────────────────────────
         GameMode gameMode = selectGameMode();
         System.out.println("✓ Режим: " + gameMode.getDescription()
                 + " (до " + gameMode.getTargetScore() + " очков)\n");
 
-        // ── 3. Формируем команды и матчи ─────────────────────────────
-        List<Team> teams   = TournamentService.createAllTeams(players);
+        List<Team> teams = TournamentService.createAllTeams(players);
         List<Match> matches = TournamentService.generateUniqueMatches(teams, gameMode);
+
+        matches = TournamentService.scheduleMatches(matches, 3);
 
         System.out.println("Всего команд:  " + teams.size());
         System.out.println("Всего матчей:  " + matches.size());
 
-        // ── 4. Режим проведения матчей ────────────────────────────────
         System.out.println("\nКак проводить матчи?");
         System.out.println("  1 — Ручной ввод счёта");
         System.out.println("  2 — Автоматическая симуляция");
@@ -35,20 +50,23 @@ public class Main {
         String modeInput = sc.nextLine().trim();
 
         if ("1".equals(modeInput)) {
-            playManual(matches);
+            playManual(matches, players);
+
         } else {
-            TournamentService.playAll(matches);
-            System.out.println("✓ Все матчи сыграны автоматически.");
+            Random random = new Random();
+            for (Match m : matches) {
+                m.play(random);
+                System.out.println("  " + m);
+                printPlayerStats(players);
+            }
         }
 
-        // ── 5. Результаты матчей ──────────────────────────────────────
         System.out.println("\nРезультаты матчей:");
         System.out.println("─".repeat(55));
         for (int i = 0; i < matches.size(); i++) {
             System.out.printf("  %2d. %s%n", i + 1, matches.get(i));
         }
 
-        // ── 6. Рейтинг ───────────────────────────────────────────────
         TournamentService.printRanking(players);
 
         System.out.println("\nПодробный рейтинг:");
@@ -67,9 +85,12 @@ public class Main {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────
-    // Выбор режима игры
-    // ─────────────────────────────────────────────────────────────────
+    private static String center(String text, int width) {
+        int padding = (width - text.length()) / 2;
+        int extra = (width - text.length()) % 2;
+        return " ".repeat(padding) + text + " ".repeat(padding + extra);
+    }
+
     private static GameMode selectGameMode() {
         GameMode[] modes = GameMode.values();
 
@@ -89,15 +110,13 @@ public class Main {
                 if (choice >= 1 && choice <= modes.length) {
                     return modes[choice - 1];
                 }
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) {
+            }
 
             System.out.println("  ! Введите число от 1 до " + modes.length);
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────
-    // Ввод игроков
-    // ─────────────────────────────────────────────────────────────────
     private static List<Player> inputPlayers() {
         List<Player> players = new ArrayList<>();
 
@@ -120,40 +139,45 @@ public class Main {
         return players;
     }
 
-    // ─────────────────────────────────────────────────────────────────
-    // Ручной ввод результатов
-    // ─────────────────────────────────────────────────────────────────
-    private static void playManual(List<Match> matches) {
+    private static void playManual(List<Match> matches, List<Player> players) {
         System.out.println("\nВводите счёт в формате «11:15»");
         System.out.println("(пустой Enter = автосимуляция этого матча)\n");
         Random random = new Random();
 
         for (int i = 0; i < matches.size(); i++) {
             Match m = matches.get(i);
-            System.out.printf("Матч %2d: %s%n", i + 1, m.getTeamsString());
-            System.out.print("  Счёт: ");
-            String line = sc.nextLine().trim();
+            System.out.printf("Матч %2d: Игра #%-3d %s%n",
+                    i + 1, i + 1, m.getTeamsString());
 
-            if (line.isEmpty()) {
-                m.play(random);
-                System.out.printf("  → авто: %d:%d%n%n", m.getScore1(), m.getScore2());
-                continue;
-            }
+            while (true) {
+                System.out.print("  Счёт: ");
+                String line = sc.nextLine().trim();
 
-            int[] scores = parseScore(line);
-            if (scores == null) {
-                System.out.println("  ! Неверный формат — авто.");
-                m.play(random);
-            } else {
+                if (line.isEmpty()) {
+                    m.play(random);
+                    System.out.printf("  → авто: %d:%d%n%n",
+                            m.getScore1(), m.getScore2());
+                    break;
+                }
+
+                int[] scores = parseScore(line);
+                if (scores == null) {
+                    System.out.println("  ! Неверный формат. Введите счёт в виде «11:15» или нажмите Enter для авто.");
+                    continue;
+                }
+
                 try {
                     m.setScore(scores[0], scores[1]);
                     System.out.printf("  → принято: %d:%d%n%n",
                             m.getScore1(), m.getScore2());
+                    break;
                 } catch (IllegalArgumentException e) {
-                    System.out.println("  ! " + e.getMessage() + " — авто.");
-                    m.play(random);
+                    System.out.printf("  ! %s Попробуйте ещё раз.%n", e.getMessage());
                 }
             }
+
+            printPlayerStats(players);
+
         }
     }
 
@@ -172,8 +196,35 @@ public class Main {
 
     private static String readNonBlank() {
         String line;
-        do { line = sc.nextLine().trim(); }
+        do {
+            line = sc.nextLine().trim();
+        }
         while (line.isEmpty());
         return line;
     }
+
+
+    private static void printPlayerStats(List<Player> players) {
+
+        List<Player> sorted = players.stream()
+                .sorted(Comparator.comparingInt(Player::getWins).reversed()
+                        .thenComparingInt(Player::getLosses))
+                .toList();
+
+        System.out.println("  +-----------------+----------+----------+--------+");
+        System.out.println("  | Статистика игроков:                             |");
+        System.out.println("  +-----------------+----------+----------+--------+");
+        System.out.printf("  | %-15s | %-8s | %-8s | %-6s |%n",
+                "Игрок", "Сыграно", "Победы", "Пор-я");
+        System.out.println("  +-----------------+----------+----------+--------+");
+
+        for (Player p : sorted) {
+            int total = p.getWins() + p.getLosses();
+            System.out.printf("  | %-15s | %-8d | %-8d | %-6d |%n",
+                    p.getName(), total, p.getWins(), p.getLosses());
+        }
+        System.out.println("  +-----------------+----------+----------+--------+");
+        System.out.println();
+    }
+
 }
