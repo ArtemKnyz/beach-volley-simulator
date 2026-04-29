@@ -84,7 +84,6 @@ class TournamentServiceTest {
     @DisplayName("Все матчи используют выбранный GameMode")
     void matchesUseCorrectGameMode() {
         List<Team> teams = TournamentService.createAllTeams(players);
-        // Проверяем через счёт: победитель должен набрать >= 21
         List<Match> matches = TournamentService.generateUniqueMatches(teams, GameMode.POINTS_21);
         TournamentService.playAll(matches);
         for (Match m : matches) {
