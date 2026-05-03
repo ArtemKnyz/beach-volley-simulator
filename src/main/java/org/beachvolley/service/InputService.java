@@ -82,7 +82,6 @@ public class InputService {
             System.out.print("Счёт: ");
             String line = sc.nextLine().trim();
 
-            // авто-режим
             if (line.isEmpty()) {
                 match.play(new Random());
                 System.out.printf("✔ Авто: %d:%d%n",
@@ -90,7 +89,6 @@ public class InputService {
                 return;
             }
 
-            // парсинг
             String[] parts = line.split(":");
             if (parts.length != 2) {
                 System.out.println("❌ Неверный формат. Пример: 11:7");
@@ -111,7 +109,6 @@ public class InputService {
                 System.out.println("❌ Нужно вводить числа. Пример: 11:7");
 
             } catch (IllegalArgumentException e) {
-                // ВАЖНО: ловим твою бизнес-логику
                 System.out.println("❌ " + e.getMessage());
             }
         }
@@ -122,19 +119,16 @@ public class InputService {
             System.out.print(prompt);
             String input = sc.nextLine().trim();
 
-            // 1. пусто
             if (input.isEmpty()) {
                 System.out.println("  ! Имя не может быть пустым");
                 continue;
             }
 
-            // 2. длина
             if (input.length() < 2) {
                 System.out.println("  ! Имя слишком короткое");
                 continue;
             }
 
-            // 3. только буквы (рус/англ) + пробел
             if (!input.matches("^[a-zA-Zа-яА-ЯёЁ ]+$")) {
                 System.out.println("  ! Имя должно содержать только буквы");
                 continue;
