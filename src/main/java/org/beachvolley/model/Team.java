@@ -1,4 +1,4 @@
-package org.beachvolley;
+package org.beachvolley.model;
 
 import java.util.List;
 

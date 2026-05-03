@@ -1,5 +1,8 @@
-package org.beachvolley;
+package org.beachvolley.model;
 
+import lombok.Getter;
+
+@Getter
 public enum GameMode {
 
     POINTS_11(11, "Beach Express"),
@@ -15,11 +18,4 @@ public enum GameMode {
         this.description = description;
     }
 
-    public int getTargetScore() {
-        return targetScore;
-    }
-
-    public String getDescription() {
-        return description;
-    }
 }

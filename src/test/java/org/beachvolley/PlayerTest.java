@@ -1,5 +1,7 @@
 package org.beachvolley;
 
+import org.beachvolley.model.Gender;
+import org.beachvolley.model.Player;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
