@@ -4,9 +4,11 @@ import org.beachvolley.model.Match;
 import org.beachvolley.model.GameMode;
 import org.beachvolley.model.Player;
 import org.beachvolley.model.Team;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class OutputService {
 
     public void printHeader() {

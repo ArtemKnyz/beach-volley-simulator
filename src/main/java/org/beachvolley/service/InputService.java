@@ -4,10 +4,12 @@ import org.beachvolley.model.Match;
 import org.beachvolley.model.GameMode;
 import org.beachvolley.model.Gender;
 import org.beachvolley.model.Player;
+import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+@Service
 public class InputService {
 
     private final Scanner sc = new Scanner(System.in, StandardCharsets.UTF_8);

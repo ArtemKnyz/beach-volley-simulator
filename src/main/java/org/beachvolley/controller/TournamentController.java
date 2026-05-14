@@ -30,4 +30,9 @@ public class TournamentController {
     public List<Player> ranking(@RequestBody List<Player> players) {
         return TournamentService.ranking(players);
     }
+
+    @GetMapping
+    public String home() {
+        return "Beach Volley API starts!";
+    }
 }
