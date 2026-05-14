@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class VolleyController {
     @GetMapping("/play")
     public String play() {
-        // ваш код симуляции
         return "Симуляция завершена. Смотрите консоль.";
     }
 }

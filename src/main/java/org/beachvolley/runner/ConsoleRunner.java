@@ -1,3 +1,5 @@
+package org.beachvolley.runner;
+
 import lombok.RequiredArgsConstructor;
 import org.beachvolley.model.GameMode;
 import org.beachvolley.model.Match;
@@ -20,19 +22,47 @@ public class ConsoleRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+
         output.printHeader();
 
         List<Player> players = input.inputPlayers();
+
         GameMode mode = input.selectGameMode();
+
+        boolean manualMode = input.chooseManualMode();
 
         output.printGameMode(mode);
 
-        List<Team> teams = TournamentService.createAllTeams(players);
-        List<Match> matches = TournamentService.generateUniqueMatches(teams, mode);
+        List<Team> teams =
+                TournamentService.createAllTeams(players);
 
-        TournamentService.playAll(matches);
+        List<Match> matches =
+                TournamentService.generateUniqueMatches(teams, mode);
+
+        matches =
+                TournamentService.scheduleMatches(matches, 3);
+
+        if (manualMode) {
+            runManual(matches, players);
+        } else {
+            TournamentService.playAll(matches);
+        }
 
         output.printResults(matches);
+
         output.printRanking(players);
+
+        System.exit(0);
+    }
+
+    private void runManual(List<Match> matches,
+                           List<Player> players) {
+
+        for (Match match : matches) {
+
+            input.enterScore(match);
+
+            output.printPlayerStats(players);
+        }
     }
 }

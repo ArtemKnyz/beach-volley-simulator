@@ -70,8 +70,26 @@ public class InputService {
     }
 
     public boolean chooseManualMode() {
-        System.out.println("1 — вручную, 2 — авто");
-        return "1".equals(sc.nextLine());
+
+        while (true) {
+
+            System.out.println();
+            System.out.println("1 — вручную");
+            System.out.println("2 — автоматически");
+            System.out.print("Ваш выбор: ");
+
+            String value = sc.nextLine().trim();
+
+            if (value.equals("1")) {
+                return true;
+            }
+
+            if (value.equals("2")) {
+                return false;
+            }
+
+            System.out.println("  ! Введите 1 или 2");
+        }
     }
 
     public void enterScore(Match match) {
