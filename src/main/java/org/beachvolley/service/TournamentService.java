@@ -1,14 +1,14 @@
-package org.beachvolley;
+package org.beachvolley.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.beachvolley.model.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class TournamentService {
 
-    private static final Logger log = LoggerFactory.getLogger(TournamentService.class);
 
     public static List<Team> createAllTeams(List<Player> players) {
         List<Player> men = players.stream()
