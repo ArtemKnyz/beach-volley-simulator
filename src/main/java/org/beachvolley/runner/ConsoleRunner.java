@@ -9,11 +9,9 @@ import org.beachvolley.service.InputService;
 import org.beachvolley.service.OutputService;
 import org.beachvolley.service.TournamentService;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 @RequiredArgsConstructor
 public class ConsoleRunner implements CommandLineRunner {
 
